@@ -1,0 +1,16 @@
+[
+{
+  "modid": "waypoints",
+  "name": "Fyu's Waypoints",
+  "description": "",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["Fyu"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
