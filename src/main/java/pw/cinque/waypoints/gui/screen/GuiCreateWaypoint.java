@@ -95,7 +95,7 @@ public class GuiCreateWaypoint extends GuiScreen {
 			int z = Integer.valueOf(coordsZ.getText());
 			int color = colorPicker.getSelectedColor();
 			
-			WaypointsMod.addWaypoint(new Waypoint(name, mc.theWorld.provider.getDimensionName(), x, y, z, color));
+			WaypointsMod.addWaypoint(new Waypoint(name, mc.theWorld.provider.getDimensionName(), mc.func_147104_D().serverIP, x, y, z, color));
 			mc.displayGuiScreen(null);
 			mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Waypoint '" + name + "' created!"));
 		} else if (button.id == 2) {
