@@ -56,7 +56,7 @@ public class Waypoint {
 	
 	@Override
 	public String toString() {
-		return name + ";" + world + ";" + x + ";" + y + ";" + z + ";" + color;
+		return name + ";" + world + ";" + server + ";" + x + ";" + y + ";" + z + ";" + color;
 	}
 	
 	public static Waypoint fromString(String string) {
