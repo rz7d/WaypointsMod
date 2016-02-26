@@ -19,6 +19,10 @@ public class Waypoint {
 	public String getName() {
 		return name;
 	}
+	
+	public String getWorld() {
+		return world;
+	}
 
 	public int getX() {
 		return x;
