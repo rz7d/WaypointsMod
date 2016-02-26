@@ -24,21 +24,27 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 @Mod(name = "Fyu's Waypoints", modid = "waypoints", version = "0.1")
 public class WaypointsMod {
 
-	private static final File WAYPOINTS_ROOT = new File(Minecraft.getMinecraft().mcDataDir + File.separator + "Fyu's Waypoints");
+	private static final File WAYPOINTS_FILE;
 	private static Minecraft mc = Minecraft.getMinecraft();
 
 	public static KeyBinding bindWaypointCreate = new KeyBinding("Create Waypoint", Keyboard.KEY_SEMICOLON, "Fyu's Waypoints");
 	public static KeyBinding bindWaypointMenu = new KeyBinding("Open Menu", Keyboard.KEY_GRAVE, "Fyu's Waypoints");
+
 	private static Set<Waypoint> waypoints = new HashSet<Waypoint>();
+
+	static {
+		File root = new File(Minecraft.getMinecraft().mcDataDir + File.separator + "Fyu's Waypoints");
+		root.mkdir();
+
+		WAYPOINTS_FILE = new File(root, "waypoints");
+	}
 
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
-		WAYPOINTS_ROOT.mkdir();
-
-		for (File serverFile : WAYPOINTS_ROOT.listFiles()) {
+		if (WAYPOINTS_FILE.exists()) {
 			try {
 				Properties properties = new Properties();
-				FileInputStream inputStream = new FileInputStream(serverFile);
+				FileInputStream inputStream = new FileInputStream(WAYPOINTS_FILE);
 
 				properties.load(inputStream);
 				inputStream.close();
@@ -59,20 +65,14 @@ public class WaypointsMod {
 
 	public static void addWaypoint(Waypoint waypoint) {
 		waypoints.add(waypoint);
-
-		File serverFile = new File(WAYPOINTS_ROOT.getAbsolutePath() + File.separator + mc.func_147104_D().serverIP);
 		Properties properties = new Properties();
 
 		try {
-			if (serverFile.exists()) {
-				FileInputStream inputStream = new FileInputStream(serverFile);
-				properties.load(inputStream);
-				inputStream.close();
+			for (Waypoint w : waypoints) {
+				properties.setProperty(w.getName(), waypoint.toString());
 			}
 
-			properties.setProperty(waypoint.getName(), waypoint.toString());
-
-			FileOutputStream output = new FileOutputStream(serverFile);
+			FileOutputStream output = new FileOutputStream(WAYPOINTS_FILE);
 			properties.store(output, null);
 			output.close();
 		} catch (IOException e) {
@@ -82,20 +82,14 @@ public class WaypointsMod {
 
 	public static void removeWaypoint(Waypoint waypoint) {
 		waypoints.remove(waypoint);
-
-		File serverFile = new File(WAYPOINTS_ROOT.getAbsolutePath() + File.separator + mc.func_147104_D().serverIP);
 		Properties properties = new Properties();
 
 		try {
-			if (serverFile.exists()) {
-				FileInputStream inputStream = new FileInputStream(serverFile);
-				properties.load(inputStream);
-				inputStream.close();
+			for (Waypoint w : waypoints) {
+				properties.setProperty(w.getName(), waypoint.toString());
 			}
 
-			properties.remove(waypoint.getName());
-
-			FileOutputStream output = new FileOutputStream(serverFile);
+			FileOutputStream output = new FileOutputStream(WAYPOINTS_FILE);
 			properties.store(output, null);
 			output.close();
 		} catch (IOException e) {
