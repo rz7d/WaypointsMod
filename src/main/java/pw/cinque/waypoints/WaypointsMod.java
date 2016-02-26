@@ -35,6 +35,22 @@ public class WaypointsMod {
 	public void init(FMLInitializationEvent event) {
 		WAYPOINTS_ROOT.mkdir();
 
+		for (File serverFile : WAYPOINTS_ROOT.listFiles()) {
+			try {
+				Properties properties = new Properties();
+				FileInputStream inputStream = new FileInputStream(serverFile);
+
+				properties.load(inputStream);
+				inputStream.close();
+
+				for (Object name : properties.keySet()) {
+					waypoints.add(Waypoint.fromString(properties.getProperty((String) name)));
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
 		ClientRegistry.registerKeyBinding(bindWaypointCreate);
 		ClientRegistry.registerKeyBinding(bindWaypointMenu);
 
@@ -44,21 +60,19 @@ public class WaypointsMod {
 	public static void addWaypoint(Waypoint waypoint) {
 		waypoints.add(waypoint);
 
-		File serverDir = new File(WAYPOINTS_ROOT.getAbsolutePath() + File.separator + mc.func_147104_D().serverIP);
-		serverDir.mkdir();
-		File worldFile = new File(serverDir.getAbsolutePath() + File.separator + mc.theWorld.getWorldInfo().getWorldName());
+		File serverFile = new File(WAYPOINTS_ROOT.getAbsolutePath() + File.separator + mc.func_147104_D().serverIP);
 		Properties properties = new Properties();
 
 		try {
-			if (worldFile.exists()) {
-				FileInputStream inputStream = new FileInputStream(worldFile);
+			if (serverFile.exists()) {
+				FileInputStream inputStream = new FileInputStream(serverFile);
 				properties.load(inputStream);
 				inputStream.close();
 			}
 
 			properties.setProperty(waypoint.getName(), waypoint.toString());
 
-			FileOutputStream output = new FileOutputStream(worldFile);
+			FileOutputStream output = new FileOutputStream(serverFile);
 			properties.store(output, null);
 			output.close();
 		} catch (IOException e) {
@@ -69,22 +83,19 @@ public class WaypointsMod {
 	public static void removeWaypoint(Waypoint waypoint) {
 		waypoints.remove(waypoint);
 
-		File serverDir = new File(WAYPOINTS_ROOT.getAbsolutePath() + File.separator + mc.func_147104_D().serverIP);
-		File worldFile = new File(serverDir.getAbsolutePath() + File.separator + waypoint.getWorld());
-		serverDir.mkdir();
-		
+		File serverFile = new File(WAYPOINTS_ROOT.getAbsolutePath() + File.separator + mc.func_147104_D().serverIP);
 		Properties properties = new Properties();
 
 		try {
-			if (worldFile.exists()) {
-				FileInputStream inputStream = new FileInputStream(worldFile);
+			if (serverFile.exists()) {
+				FileInputStream inputStream = new FileInputStream(serverFile);
 				properties.load(inputStream);
 				inputStream.close();
 			}
 
 			properties.remove(waypoint.getName());
-			
-			FileOutputStream output = new FileOutputStream(worldFile);
+
+			FileOutputStream output = new FileOutputStream(serverFile);
 			properties.store(output, null);
 			output.close();
 		} catch (IOException e) {
