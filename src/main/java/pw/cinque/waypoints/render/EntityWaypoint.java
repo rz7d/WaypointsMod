@@ -14,7 +14,6 @@ public class EntityWaypoint extends Entity {
 
 	@Override
 	protected void entityInit() {
-		System.out.println("ez");
 	}
 
 	@Override
@@ -36,8 +35,8 @@ public class EntityWaypoint extends Entity {
 	}
 
 	@Override
-	public float getBrightness(float par1) {
-		return 1.0F;
+	public float getBrightness(float f) {
+		return 1F;
 	}
 
 }
