@@ -3,6 +3,8 @@ package pw.cinque.waypoints.gui.screen;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.EnumChatFormatting;
 
 import org.apache.commons.lang3.math.NumberUtils;
 import org.lwjgl.input.Keyboard;
@@ -93,7 +95,9 @@ public class GuiCreateWaypoint extends GuiScreen {
 			int z = Integer.valueOf(coordsZ.getText());
 			int color = colorPicker.getSelectedColor();
 			
-			WaypointsMod.getWaypoints().add(new Waypoint(name, x, y, z, color));
+			WaypointsMod.addWaypoint(new Waypoint(name, mc.theWorld.provider.getDimensionName(), x, y, z, color));
+			mc.displayGuiScreen(null);
+			mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Waypoint '" + name + "' created!"));
 		} else if (button.id == 2) {
 			mc.displayGuiScreen(null);
 		}
