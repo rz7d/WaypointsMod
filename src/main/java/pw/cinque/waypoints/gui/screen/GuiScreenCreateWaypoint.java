@@ -93,9 +93,12 @@ public class GuiScreenCreateWaypoint extends GuiScreen {
 
 	@Override
 	protected void actionPerformed(GuiButton button) {
-		if (button.id == 0) {
+		switch (button.id) {
+		case 0:
 			colorPicker.nextColor();
-		} else if (button.id == 1) {
+			return;
+			
+		case 1:
 			String name = this.name.getText();
 			String world = mc.theWorld.provider.getDimensionName();
 			String server = mc.func_147104_D().serverIP;
@@ -107,8 +110,11 @@ public class GuiScreenCreateWaypoint extends GuiScreen {
 			WaypointsMod.addWaypoint(new Waypoint(name, world, server, x, y, z, color));
 			mc.displayGuiScreen(null);
 			mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Waypoint '" + name + "' created!"));
-		} else if (button.id == 2) {
+			return;
+			
+		case 2:
 			mc.displayGuiScreen(null);
+			return;
 		}
 	}
 
