@@ -1,11 +1,13 @@
 package pw.cinque.waypoints;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Properties;
 import java.util.Set;
 
 import net.minecraft.client.Minecraft;
@@ -36,6 +38,7 @@ public class WaypointsMod {
 	public static KeyBinding bindWaypointMenu = new KeyBinding("Open Menu", Keyboard.KEY_GRAVE, "Fyu's Waypoints");
 
 	private static Set<Waypoint> waypoints = new HashSet<Waypoint>();
+	private static ArrayList<Waypoint> waypointsToRender = new ArrayList<Waypoint>();
 
 	static {
 		File root = new File(Minecraft.getMinecraft().mcDataDir + File.separator + "Fyu's Waypoints");
@@ -45,26 +48,25 @@ public class WaypointsMod {
 	}
 
 	@EventHandler
-	public void init(FMLInitializationEvent event) {		
+	public void init(FMLInitializationEvent event) {
 		if (WAYPOINTS_FILE.exists()) {
 			try {
-				Properties properties = new Properties();
-				FileInputStream inputStream = new FileInputStream(WAYPOINTS_FILE);
-
-				properties.load(inputStream);
-				inputStream.close();
-
-				for (Object name : properties.keySet()) {
-					waypoints.add(Waypoint.fromString(properties.getProperty((String) name)));
+				BufferedReader reader = new BufferedReader(new FileReader(WAYPOINTS_FILE));
+				String readLine;
+				
+				while ((readLine = reader.readLine()) != null) {
+					waypoints.add(Waypoint.fromString(readLine));
 				}
+				
+				reader.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
-		
+
 		ClientRegistry.registerKeyBinding(bindWaypointCreate);
 		ClientRegistry.registerKeyBinding(bindWaypointMenu);
-		
+
 		EntityRegistry.registerModEntity(EntityWaypoints.class, "Waypoint", 999, this, 1, 1, false);
 		RenderingRegistry.registerEntityRenderingHandler(EntityWaypoints.class, new WaypointRenderer());
 
@@ -74,37 +76,26 @@ public class WaypointsMod {
 
 	public static void addWaypoint(Waypoint waypoint) {
 		waypoints.add(waypoint);
-		EntityWaypoints.refreshWaypointsToRender();
-		
-		Properties properties = new Properties();
-
-		try {
-			for (Waypoint w : waypoints) {
-				properties.setProperty(w.getName(), w.toString());
-			}
-
-			FileOutputStream output = new FileOutputStream(WAYPOINTS_FILE);
-			properties.store(output, null);
-			output.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		refreshWaypointsToRender();
+		writeWaypointsToDisk();
 	}
 
 	public static void removeWaypoint(Waypoint waypoint) {
 		waypoints.remove(waypoint);
-		EntityWaypoints.refreshWaypointsToRender();
-		
-		Properties properties = new Properties();
-
+		refreshWaypointsToRender();
+		writeWaypointsToDisk();
+	}
+	
+	private static void writeWaypointsToDisk() {
 		try {
+			BufferedWriter writer = new BufferedWriter(new FileWriter(WAYPOINTS_FILE));
+
 			for (Waypoint w : waypoints) {
-				properties.setProperty(w.getName(), w.toString());
+				writer.write(w.toString());
+				writer.newLine();
 			}
 
-			FileOutputStream output = new FileOutputStream(WAYPOINTS_FILE);
-			properties.store(output, null);
-			output.close();
+			writer.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -112,6 +103,20 @@ public class WaypointsMod {
 
 	public static Set<Waypoint> getWaypoints() {
 		return waypoints;
+	}
+
+	public static void refreshWaypointsToRender() {
+		waypointsToRender.clear();
+
+		for (Waypoint waypoint : WaypointsMod.getWaypoints()) {
+			if (waypoint.shouldRender()) {
+				waypointsToRender.add(waypoint);
+			}
+		}
+	}
+
+	public static ArrayList<Waypoint> getWaypointsToRender() {
+		return waypointsToRender;
 	}
 
 }
