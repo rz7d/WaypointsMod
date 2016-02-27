@@ -20,17 +20,24 @@ import pw.cinque.waypoints.listener.KeybindListener;
 import pw.cinque.waypoints.listener.WorldListener;
 import pw.cinque.waypoints.render.EntityWaypoints;
 import pw.cinque.waypoints.render.WaypointRenderer;
+import scala.actors.threadpool.Arrays;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
+import cpw.mods.fml.common.ModMetadata;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.EntityRegistry;
 
-@Mod(name = "Fyu's Waypoints", modid = "waypoints", version = "0.1")
+@Mod(name = WaypointsMod.NAME, modid = WaypointsMod.MOD_ID, version = WaypointsMod.VERSION)
 public class WaypointsMod {
 
+	public static final String NAME = "Fyu's Waypoints";
+	public static final String MOD_ID = "waypoints";
+	public static final String VERSION = "1.0-Beta";
+	
 	private static final File WAYPOINTS_FILE;
 	private static Minecraft mc = Minecraft.getMinecraft();
 
@@ -48,16 +55,22 @@ public class WaypointsMod {
 	}
 
 	@EventHandler
+	public void preInit(FMLPreInitializationEvent event) {
+		ModMetadata metadata = event.getModMetadata();
+		metadata.version = VERSION;
+	}
+	
+	@EventHandler
 	public void init(FMLInitializationEvent event) {
 		if (WAYPOINTS_FILE.exists()) {
 			try {
 				BufferedReader reader = new BufferedReader(new FileReader(WAYPOINTS_FILE));
 				String readLine;
-				
+
 				while ((readLine = reader.readLine()) != null) {
 					waypoints.add(Waypoint.fromString(readLine));
 				}
-				
+
 				reader.close();
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -85,7 +98,7 @@ public class WaypointsMod {
 		refreshWaypointsToRender();
 		writeWaypointsToDisk();
 	}
-	
+
 	private static void writeWaypointsToDisk() {
 		try {
 			BufferedWriter writer = new BufferedWriter(new FileWriter(WAYPOINTS_FILE));
