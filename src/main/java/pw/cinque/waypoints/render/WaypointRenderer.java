@@ -23,11 +23,7 @@ public class WaypointRenderer extends Render {
 	 */
 	@Override
 	public void doRender(Entity entity, double d1, double d2, double d3, float f1, float f2) {
-		for (Waypoint waypoint : WaypointsMod.getWaypoints()) {
-			if (!waypoint.shouldRender()) {
-				continue;
-			}
-
+		for (Waypoint waypoint : WaypointsMod.getWaypointsToRender()) {
 			double x = waypoint.getX() - RenderManager.renderPosX;
 			double y = waypoint.getY() - RenderManager.renderPosY;
 			double z = waypoint.getZ() - RenderManager.renderPosZ;
