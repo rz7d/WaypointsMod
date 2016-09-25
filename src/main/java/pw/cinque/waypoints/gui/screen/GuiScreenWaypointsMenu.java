@@ -1,5 +1,6 @@
 package pw.cinque.waypoints.gui.screen;
 
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import pw.cinque.waypoints.Waypoint;
@@ -16,6 +17,8 @@ public class GuiScreenWaypointsMenu extends GuiScreen {
 	public void initGui() {
 		this.buttonList.add(delete = new GuiButton(0, this.width / 2 - 101, this.height - 24, 100, 20, "Delete"));
 		this.buttonList.add(cancel = new GuiButton(1, this.width / 2 + 1, this.height - 24, 100, 20, "Cancel"));
+		
+		this.delete.enabled = false;
 		this.waypointsList = new GuiSlotWaypoints(this);
 	}
 
@@ -24,7 +27,7 @@ public class GuiScreenWaypointsMenu extends GuiScreen {
 		this.drawDefaultBackground();
 
 		this.waypointsList.drawScreen(x, y, partialTicks);
-		this.drawCenteredString(mc.fontRenderer, "Waypoints Menu", this.width / 2, 18, 0xFFFFFF);
+		this.drawCenteredString(this.fontRendererObj, "Waypoints Menu", this.width / 2, 18, 0xFFFFFF);
 
 		super.drawScreen(x, y, partialTicks);
 	}
@@ -51,6 +54,10 @@ public class GuiScreenWaypointsMenu extends GuiScreen {
 	@Override
 	public boolean doesGuiPauseGame() {
 		return false;
+	}
+	
+	public FontRenderer getFontRenderer() {
+		return this.fontRendererObj;
 	}
 
 }
