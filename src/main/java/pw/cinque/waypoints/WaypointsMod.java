@@ -31,6 +31,7 @@ import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 import org.lwjgl.input.Keyboard;
 
+import pw.cinque.waypoints.listener.DeathListener;
 import pw.cinque.waypoints.listener.KeybindListener;
 import pw.cinque.waypoints.listener.WorldListener;
 import pw.cinque.waypoints.render.EntityWaypoints;
@@ -88,6 +89,7 @@ public class WaypointsMod {
 
 		MinecraftForge.EVENT_BUS.register(new KeybindListener());
 		MinecraftForge.EVENT_BUS.register(new WorldListener());
+		MinecraftForge.EVENT_BUS.register(new DeathListener());
 	}
 
 	@SubscribeEvent

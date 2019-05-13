@@ -3,6 +3,8 @@ package pw.cinque.waypoints;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 
+import java.util.Objects;
+
 public class Waypoint {
 
 	private static Minecraft mc = Minecraft.getMinecraft();
@@ -70,6 +72,25 @@ public class Waypoint {
 	public static Waypoint fromString(String string) {
 		String[] parts = string.split(";");
 		return new Waypoint(parts[0], parts[1], parts[2], Integer.valueOf(parts[3]), Integer.valueOf(parts[4]), Integer.valueOf(parts[5]), Integer.valueOf(parts[6]));
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Waypoint waypoint = (Waypoint) o;
+		return getX() == waypoint.getX() &&
+			getY() == waypoint.getY() &&
+			getZ() == waypoint.getZ() &&
+			getColor() == waypoint.getColor() &&
+			Objects.equals(getName(), waypoint.getName()) &&
+			Objects.equals(getWorld(), waypoint.getWorld()) &&
+			Objects.equals(getServer(), waypoint.getServer());
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(getName(), getWorld(), getServer(), getX(), getY(), getZ(), getColor());
 	}
 
 }
