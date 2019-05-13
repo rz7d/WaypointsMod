@@ -86,9 +86,9 @@ public class WaypointsMod {
 		ClientRegistry.registerKeyBinding(bindWaypointCreate);
 		ClientRegistry.registerKeyBinding(bindWaypointMenu);
 
-        FMLCommonHandler.instance().bus().register(new KeybindListener());
-        MinecraftForge.EVENT_BUS.register(new WorldListener());
-    }
+		MinecraftForge.EVENT_BUS.register(new KeybindListener());
+		MinecraftForge.EVENT_BUS.register(new WorldListener());
+	}
 
 	@SubscribeEvent
 	public void registerEntities(RegistryEvent.Register<EntityEntry> event) {
