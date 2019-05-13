@@ -102,7 +102,7 @@ public class GuiScreenCreateWaypoint extends GuiScreen {
 			
 		case 1:
 			String name = this.name.getText();
-			String world = mc.world.getProviderName();
+			String world = mc.world.provider.getDimensionType().toString();
 			String server = mc.getCurrentServerData().serverIP;
 			int x = Integer.valueOf(coordsX.getText());
 			int y = Integer.valueOf(coordsY.getText());

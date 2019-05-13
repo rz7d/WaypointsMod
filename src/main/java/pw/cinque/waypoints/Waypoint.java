@@ -52,7 +52,7 @@ public class Waypoint {
 	}
 
 	public boolean shouldRender() {
-		return !mc.isSingleplayer() && mc.world.getProviderName().equals(world) && mc.getCurrentServerData().serverIP.equals(server);
+		return !mc.isSingleplayer() && mc.world.provider.getDimensionType().toString().equals(world) && mc.getCurrentServerData().serverIP.equals(server);
 	}
 
 	public double getDistance(Entity en) {
