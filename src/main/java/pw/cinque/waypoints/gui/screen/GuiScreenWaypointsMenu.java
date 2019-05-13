@@ -7,6 +7,8 @@ import pw.cinque.waypoints.Waypoint;
 import pw.cinque.waypoints.WaypointsMod;
 import pw.cinque.waypoints.gui.GuiSlotWaypoints;
 
+import java.io.IOException;
+
 public class GuiScreenWaypointsMenu extends GuiScreen {
 
 	private GuiSlotWaypoints waypointsList;
@@ -60,4 +62,9 @@ public class GuiScreenWaypointsMenu extends GuiScreen {
 		return this.fontRenderer;
 	}
 
+	@Override
+	public void handleMouseInput() throws IOException {
+		super.handleMouseInput();
+		waypointsList.handleMouseInput();
+	}
 }
