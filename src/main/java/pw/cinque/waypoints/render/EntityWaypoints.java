@@ -33,12 +33,12 @@ public class EntityWaypoints extends Entity {
 	}
 
 	@Override
-	public int getBrightnessForRender(float f) {
+	public int getBrightnessForRender() {
 		return 15728880;
 	}
 
 	@Override
-	public float getBrightness(float f) {
+	public float getBrightness() {
 		return 1F;
 	}
 

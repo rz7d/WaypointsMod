@@ -2,9 +2,9 @@ package pw.cinque.waypoints.listener;
 
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import pw.cinque.waypoints.WaypointsMod;
 import pw.cinque.waypoints.render.EntityWaypoints;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class WorldListener {
 
@@ -12,10 +12,10 @@ public class WorldListener {
 
 	@SubscribeEvent
 	public void onSwitchWorld(EntityJoinWorldEvent event) {
-		if (event.entity == mc.thePlayer) {
-			EntityWaypoints entity = new EntityWaypoints(mc.theWorld);
+		if (event.getEntity() == mc.player) {
+			EntityWaypoints entity = new EntityWaypoints(mc.world);
 			WaypointsMod.refreshWaypointsToRender();
-			mc.theWorld.spawnEntityInWorld(entity);
+			mc.world.spawnEntity(entity);
 		}
 	}
 

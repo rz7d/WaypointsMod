@@ -1,12 +1,11 @@
 package pw.cinque.waypoints.gui.screen;
 
-import pw.cinque.waypoints.Waypoint;
-import pw.cinque.waypoints.WaypointsMod;
-import pw.cinque.waypoints.gui.GuiSlotWaypoints;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
+import pw.cinque.waypoints.Waypoint;
+import pw.cinque.waypoints.WaypointsMod;
 
 public class GuiScreenDeleteConfirm extends GuiScreen {
 
@@ -37,7 +36,7 @@ public class GuiScreenDeleteConfirm extends GuiScreen {
 		case 0:
 			WaypointsMod.removeWaypoint(waypoint);
 			mc.displayGuiScreen(null);
-			mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Waypoint '" + waypoint.getName() + "' removed!"));
+			mc.player.sendMessage(new TextComponentString(TextFormatting.GREEN + "Waypoint '" + waypoint.getName() + "' removed!"));
 			return;
 			
 		case 1:

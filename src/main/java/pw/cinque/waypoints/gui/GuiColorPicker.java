@@ -23,22 +23,22 @@ public class GuiColorPicker extends GuiButton {
 	}
 
 	@Override
-	public void drawButton(Minecraft mc, int x, int y) {
+	public void drawButton(Minecraft mc, int x, int y, float partialTicks) {
 		if (!this.visible) {
 			return;
 		}
 
 		FontRenderer fontrenderer = mc.fontRenderer;
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.field_146123_n = x >= this.xPosition && y >= this.yPosition && x < this.xPosition + this.width && y < this.yPosition + this.height;
-		int hoverState = this.getHoverState(this.field_146123_n);
+		this.hovered = x >= this.x && y >= this.y && x < this.x + this.width && y < this.y + this.height;
+		int hoverState = this.getHoverState(this.hovered);
 
 		GL11.glEnable(GL11.GL_BLEND);
 		OpenGlHelper.glBlendFunc(770, 771, 1, 0);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
-		this.drawRect(this.xPosition, this.yPosition, this.xPosition + this.width, this.yPosition + this.height, 0xFFA0A0A0);
-		this.drawRect(this.xPosition + 1, this.yPosition + 1, this.xPosition + this.width - 1, this.yPosition + this.height - 1, getSelectedColor());
+		this.drawRect(this.x, this.y, this.x + this.width, this.y + this.height, 0xFFA0A0A0);
+		this.drawRect(this.x + 1, this.y + 1, this.x + this.width - 1, this.y + this.height - 1, getSelectedColor());
 
 		this.mouseDragged(mc, x, y);
 	}

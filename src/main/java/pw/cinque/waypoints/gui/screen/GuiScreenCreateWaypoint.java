@@ -3,15 +3,17 @@ package pw.cinque.waypoints.gui.screen;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.EnumChatFormatting;
 
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.lwjgl.input.Keyboard;
 
 import pw.cinque.waypoints.Waypoint;
 import pw.cinque.waypoints.WaypointsMod;
 import pw.cinque.waypoints.gui.GuiColorPicker;
+
+import java.io.IOException;
 
 public class GuiScreenCreateWaypoint extends GuiScreen {
 
@@ -25,20 +27,20 @@ public class GuiScreenCreateWaypoint extends GuiScreen {
 
 	@Override
 	public void initGui() {
-		this.name = new GuiTextField(this.fontRendererObj, this.width / 2 - 100, this.height / 2 - 48, 200, 20);
+		this.name = new GuiTextField(3, this.fontRenderer, this.width / 2 - 100, this.height / 2 - 48, 200, 20);
 		this.name.setFocused(true);
 
-		this.coordsX = new GuiTextField(this.fontRendererObj, this.width / 2 - 100, this.height / 2 - 10, 64, 20);
-		this.coordsY = new GuiTextField(this.fontRendererObj, this.width / 2 - 32, this.height / 2 - 10, 63, 20);
-		this.coordsZ = new GuiTextField(this.fontRendererObj, this.width / 2 + 35, this.height / 2 - 10, 64, 20);
+		this.coordsX = new GuiTextField(4, this.fontRenderer, this.width / 2 - 100, this.height / 2 - 10, 64, 20);
+		this.coordsY = new GuiTextField(5, this.fontRenderer, this.width / 2 - 32, this.height / 2 - 10, 63, 20);
+		this.coordsZ = new GuiTextField(6, this.fontRenderer, this.width / 2 + 35, this.height / 2 - 10, 64, 20);
 
 		this.buttonList.add(colorPicker = new GuiColorPicker(0, this.width / 2 - 101, this.height / 2 + 25, 202, 20));
 		this.buttonList.add(create = new GuiButton(1, this.width / 2 - 101, this.height / 2 + 50, 100, 20, "Create"));
 		this.buttonList.add(cancel = new GuiButton(2, this.width / 2 + 1, this.height / 2 + 50, 100, 20, "Cancel"));
 		
-		this.coordsX.setText(String.valueOf((int) mc.thePlayer.posX));
-		this.coordsY.setText(String.valueOf((int) mc.thePlayer.posY));
-		this.coordsZ.setText(String.valueOf((int) mc.thePlayer.posZ));
+		this.coordsX.setText(String.valueOf((int) mc.player.posX));
+		this.coordsY.setText(String.valueOf((int) mc.player.posY));
+		this.coordsZ.setText(String.valueOf((int) mc.player.posZ));
 		this.create.enabled = false;
 	}
 
@@ -46,10 +48,10 @@ public class GuiScreenCreateWaypoint extends GuiScreen {
 	public void drawScreen(int x, int y, float partialTicks) {
 		this.drawDefaultBackground();
 
-		this.drawCenteredString(this.fontRendererObj, "Create Waypoint", this.width / 2, 10, 0xFFFFFF);
-		this.drawCenteredString(this.fontRendererObj, "Name:", this.width / 2, this.height / 2 - 60, 0xFFFFFF);
-		this.drawCenteredString(this.fontRendererObj, "Coordinates (X/Y/Z):", this.width / 2, this.height / 2 - 22, 0xFFFFFF);
-		this.drawCenteredString(this.fontRendererObj, "Color:", this.width / 2, this.height / 2 + 14, 0xFFFFFF);
+		this.drawCenteredString(this.fontRenderer, "Create Waypoint", this.width / 2, 10, 0xFFFFFF);
+		this.drawCenteredString(this.fontRenderer, "Name:", this.width / 2, this.height / 2 - 60, 0xFFFFFF);
+		this.drawCenteredString(this.fontRenderer, "Coordinates (X/Y/Z):", this.width / 2, this.height / 2 - 22, 0xFFFFFF);
+		this.drawCenteredString(this.fontRenderer, "Color:", this.width / 2, this.height / 2 + 14, 0xFFFFFF);
 
 		this.name.drawTextBox();
 		this.coordsX.drawTextBox();
@@ -74,7 +76,7 @@ public class GuiScreenCreateWaypoint extends GuiScreen {
 		}
 		
 		for (Waypoint waypoint : WaypointsMod.getWaypoints()) {
-			if (waypoint.getName().equalsIgnoreCase(name.getText()) && waypoint.getServer().equalsIgnoreCase(mc.func_147104_D().serverIP)) {
+			if (waypoint.getName().equalsIgnoreCase(name.getText()) && waypoint.getServer().equalsIgnoreCase(mc.getCurrentServerData().serverIP)) {
 				this.create.enabled = false;
 				return;
 			}
@@ -100,8 +102,8 @@ public class GuiScreenCreateWaypoint extends GuiScreen {
 			
 		case 1:
 			String name = this.name.getText();
-			String world = mc.theWorld.provider.getDimensionName();
-			String server = mc.func_147104_D().serverIP;
+			String world = mc.world.getProviderName();
+			String server = mc.getCurrentServerData().serverIP;
 			int x = Integer.valueOf(coordsX.getText());
 			int y = Integer.valueOf(coordsY.getText());
 			int z = Integer.valueOf(coordsZ.getText());
@@ -109,7 +111,7 @@ public class GuiScreenCreateWaypoint extends GuiScreen {
 			
 			WaypointsMod.addWaypoint(new Waypoint(name, world, server, x, y, z, color));
 			mc.displayGuiScreen(null);
-			mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Waypoint '" + name + "' created!"));
+			mc.player.sendMessage(new TextComponentString(TextFormatting.GREEN + "Waypoint '" + name + "' created!"));
 			return;
 			
 		case 2:
@@ -119,7 +121,7 @@ public class GuiScreenCreateWaypoint extends GuiScreen {
 	}
 
 	@Override
-	protected void mouseClicked(int x, int y, int key) {
+	protected void mouseClicked(int x, int y, int key) throws IOException {
 		super.mouseClicked(x, y, key);
 		this.name.mouseClicked(x, y, key);
 		this.coordsX.mouseClicked(x, y, key);

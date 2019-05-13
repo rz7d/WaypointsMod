@@ -50,7 +50,7 @@ public class GuiSlotWaypoints extends GuiSlot {
 	}
 
 	@Override
-	protected void drawSlot(int index, int x, int y, int p_148126_4_, Tessellator tessellator, int p_148126_6_, int p_148126_7_) {
+	protected void drawSlot(int index, int x, int y, int height, int mouseX, int mouseY, float partialTicks) {
 		Waypoint waypoint = WaypointsMod.getWaypointsToRender().get(index);
 		parent.drawString(parent.getFontRenderer(), waypoint.getName(), x + 2, y, 0xFFFFFF);
 		parent.drawString(parent.getFontRenderer(), waypoint.getWorld() + " - " + waypoint.getX() + " / " + waypoint.getY() + " / " + waypoint.getZ(), x + 2, y + 12, 0x777777);

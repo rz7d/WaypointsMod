@@ -27,7 +27,7 @@ public class GuiScreenWaypointsMenu extends GuiScreen {
 		this.drawDefaultBackground();
 
 		this.waypointsList.drawScreen(x, y, partialTicks);
-		this.drawCenteredString(this.fontRendererObj, "Waypoints Menu", this.width / 2, 18, 0xFFFFFF);
+		this.drawCenteredString(this.fontRenderer, "Waypoints Menu", this.width / 2, 18, 0xFFFFFF);
 
 		super.drawScreen(x, y, partialTicks);
 	}
@@ -57,7 +57,7 @@ public class GuiScreenWaypointsMenu extends GuiScreen {
 	}
 	
 	public FontRenderer getFontRenderer() {
-		return this.fontRendererObj;
+		return this.fontRenderer;
 	}
 
 }
