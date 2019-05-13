@@ -3,7 +3,4 @@
 /bin/
 /build/
 /eclipse/
-/gradle/
 .classpath
-gradlew
-gradlew.bat
