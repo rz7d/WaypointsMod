@@ -8,7 +8,6 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.lang.ref.Reference;
 import java.lang.ref.SoftReference;
-import java.lang.ref.WeakReference;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -20,19 +19,20 @@ import static java.nio.file.StandardOpenOption.*;
 
 public class WaypointsStorage {
 
-    private static volatile Reference<Gson> gson = new SoftReference<>(new Gson());
+    private static volatile Reference<Gson> gson;
 
     private static Gson gson() {
-        Gson g = gson.get();
+        Gson g = gson == null ? null : gson.get();
         if (g == null) {
-            gson = new WeakReference<>(g = new Gson());
+            g = new Gson();
+            gson = new SoftReference<>(g);
         }
         return g;
     }
 
     private final Path storage;
 
-    private Set<Waypoint> waypoints = new HashSet<>();
+    private final Set<Waypoint> waypoints = new HashSet<>();
 
     public WaypointsStorage(Path storage) {
         this.storage = storage;

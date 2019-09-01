@@ -11,8 +11,12 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;
 import org.lwjgl.input.Keyboard;
+import pw.cinque.waypoints.command.HereCommand;
+import pw.cinque.waypoints.command.LocCommand;
+import pw.cinque.waypoints.command.WaypointCommand;
 import pw.cinque.waypoints.entity.Waypoint;
 import pw.cinque.waypoints.listener.KeybindListener;
 import pw.cinque.waypoints.listener.WorldListener;
@@ -76,6 +80,9 @@ public class WaypointsMod {
 
         FMLCommonHandler.instance().bus().register(new KeybindListener());
         MinecraftForge.EVENT_BUS.register(new WorldListener());
+        ClientCommandHandler.instance.registerCommand(new HereCommand());
+        ClientCommandHandler.instance.registerCommand(new LocCommand());
+        ClientCommandHandler.instance.registerCommand(new WaypointCommand());
     }
 
     public static void addWaypoint(Waypoint waypoint) {

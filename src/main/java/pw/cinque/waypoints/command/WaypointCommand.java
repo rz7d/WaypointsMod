@@ -12,6 +12,11 @@ public class WaypointCommand extends CommandBase {
     private static final String NAME = "waypoint";
 
     @Override
+    public boolean canCommandSenderUseCommand(ICommandSender sender) {
+        return true;
+    }
+
+    @Override
     public String getCommandName() {
         return NAME;
     }

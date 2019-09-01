@@ -7,27 +7,26 @@ import net.minecraft.entity.Entity;
 
 import java.awt.*;
 import java.io.*;
-import java.net.InetSocketAddress;
 
 public final class Waypoint {
 
-    public static Waypoint of(Location location, String name, Color color, String address) {
-        // lastIndexOf: for IPv6 support
-        int sep = address.lastIndexOf(':');
+    // public static Waypoint of(Location location, String name, Color color, String address) {
+    //     // lastIndexOf: for IPv6 support
+    //     int sep = address.lastIndexOf(':');
+    //
+    //     InetSocketAddress server;
+    //     if (sep + 1 > address.length()) {
+    //         server = new InetSocketAddress(address, 25565);
+    //     } else {
+    //         server = new InetSocketAddress(
+    //             sep == -1 ? address : address.substring(0, sep),
+    //             sep == -1 ? 25565 : Integer.parseInt(address.substring(sep + 1)));
+    //     }
+    //
+    //     return new Waypoint(location, name, color, server);
+    // }
 
-        InetSocketAddress server;
-        if (sep + 1 > address.length()) {
-            server = new InetSocketAddress(address, 25565);
-        } else {
-            server = new InetSocketAddress(
-                sep == -1 ? address : address.substring(0, sep),
-                Integer.parseInt(address.substring(sep + 1)));
-        }
-
-        return new Waypoint(location, name, color, server);
-    }
-
-    public static Waypoint of(Location location, String name, Color color, InetSocketAddress server) {
+    public static Waypoint of(Location location, String name, Color color, String server) {
         return new Waypoint(location, name, color, server);
     }
 
@@ -36,9 +35,9 @@ public final class Waypoint {
     private final String name;
     private final Color color;
 
-    private final InetSocketAddress server;
+    private final String server;
 
-    private Waypoint(Location location, String name, Color color, InetSocketAddress server) {
+    private Waypoint(Location location, String name, Color color, String server) {
         this.location = location;
         this.name = name;
         this.color = color;
@@ -57,7 +56,7 @@ public final class Waypoint {
         return color;
     }
 
-    public InetSocketAddress server() {
+    public String server() {
         return server;
     }
 
@@ -66,7 +65,7 @@ public final class Waypoint {
         final Minecraft mc = Minecraft.getMinecraft();
         return !mc.isSingleplayer()
             && mc.theWorld.provider.getDimensionName().equals(location.world())
-            && mc.getCurrentServerData().serverIP.equals(server.getHostName());
+            && mc.getCurrentServerData().serverIP.equals(server);
     }
 
     @SideOnly(Side.CLIENT)
@@ -100,10 +99,8 @@ public final class Waypoint {
             String world = in.readUTF();
             String name = in.readUTF();
             Color color = new Color(in.readInt());
-            InetSocketAddress server = (InetSocketAddress) in.readObject();
+            String server = in.readUTF();
             return of(Location.of(x, y, z, world), name, color, server);
-        } catch (ClassNotFoundException exception) {
-            throw new IOException("Cannot deserialize object", exception);
         }
     }
 

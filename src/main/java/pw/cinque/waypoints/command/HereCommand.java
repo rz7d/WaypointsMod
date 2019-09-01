@@ -23,6 +23,11 @@ public class HereCommand extends CommandBase {
     private static final String NAME = "here";
 
     @Override
+    public boolean canCommandSenderUseCommand(ICommandSender sender) {
+        return true;
+    }
+
+    @Override
     public String getCommandName() {
         return NAME;
     }
@@ -48,7 +53,7 @@ public class HereCommand extends CommandBase {
         double y = player.posY;
         double z = player.posZ;
 
-        String name = "X: " + x + ", Y: " + y + ", Z: " + z;
+        String name = "X: " + (int) x + ", Y: " + (int) y + ", Z: " + (int) z;
         Color color = new Color(new Random(Double.doubleToLongBits(x + y + z)).nextInt() & 0x00FFFFFF);
 
         if (argc >= 1) {
@@ -62,7 +67,7 @@ public class HereCommand extends CommandBase {
 
         WaypointsMod.addWaypoint(Waypoint.of(Location.of(x, y, z, player.worldObj.provider.getDimensionName()),
             name, color, Minecraft.getMinecraft().getCurrentServerData().serverIP));
-        sender.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Instance waypoint '" + name + "' created."));
+        sender.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Instant waypoint '" + name + "' created."));
     }
 
     private static final Map<String, Color> COLOR_NAME_MAPPING;
