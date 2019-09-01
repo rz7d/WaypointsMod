@@ -1,7 +1,6 @@
 package pw.cinque.waypoints.command;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentText;
@@ -18,7 +17,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-public class HereCommand extends CommandBase {
+public class HereCommand extends AbstractCommand {
 
     private static final String NAME = "here";
 
@@ -35,18 +34,19 @@ public class HereCommand extends CommandBase {
     @Override
     public String getCommandUsage(ICommandSender sender) {
         if (sender instanceof EntityPlayer) {
-            return "/" + NAME + " or /" + NAME + " <color> <name...>";
+            return "/" + NAME + " or /" + NAME + " <color> <name>";
         }
         return "/" + NAME;
     }
 
     @Override
-    public void processCommand(ICommandSender sender, String[] args) {
-        if (!(sender instanceof EntityPlayer)) {
-            sender.addChatMessage(new ChatComponentText("You are not a player."));
-            return;
-        }
-        EntityPlayer player = (EntityPlayer) sender;
+    public boolean execute(ICommandSender sender, String[] args) {
+        sender.addChatMessage(new ChatComponentText("You are not a player."));
+        return true;
+    }
+
+    @Override
+    public boolean execute(EntityPlayer player, String[] args) {
         int argc = args.length;
 
         double x = player.posX;
@@ -59,7 +59,7 @@ public class HereCommand extends CommandBase {
         if (argc >= 1) {
             color = colorize(args[0]);
             if (color == null) {
-                sender.addChatMessage(new ChatComponentText(args[0] + " is invalid color"));
+                player.addChatMessage(new ChatComponentText(args[0] + " is not a valid color"));
                 color = random();
             }
         }
@@ -67,7 +67,8 @@ public class HereCommand extends CommandBase {
 
         WaypointsMod.addWaypoint(Waypoint.of(Location.of(x, y, z, player.worldObj.provider.getDimensionName()),
             name, color, Minecraft.getMinecraft().getCurrentServerData().serverIP));
-        sender.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Instant waypoint '" + name + "' created."));
+        player.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Instant waypoint '" + name + "' created."));
+        return true;
     }
 
     private static final Map<String, Color> COLOR_NAME_MAPPING;

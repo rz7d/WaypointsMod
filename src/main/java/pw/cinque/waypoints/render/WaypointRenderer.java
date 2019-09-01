@@ -24,8 +24,9 @@ public final class WaypointRenderer extends Render {
     public void doRender(Entity entity, double d1, double d2, double d3, float f1, float f2) {
         final RenderManager renderManager = this.renderManager;
 
-        if (!WaypointsMod.enable)
+        if (!WaypointsMod.enabled) {
             return;
+        }
 
         for (Waypoint waypoint : WaypointsMod.getWaypointsToRender()) {
             Location location = waypoint.location();

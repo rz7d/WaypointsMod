@@ -22,14 +22,14 @@ public class KeybindListener {
             } else {
                 mc.displayGuiScreen(new GuiScreenCreateWaypoint());
             }
-        } else if (WaypointsMod.bindWaypointMenu.isPressed()) {
+        }
+        if (WaypointsMod.bindWaypointMenu.isPressed()) {
             for (Waypoint waypoint : WaypointsMod.getWaypoints()) {
                 if (waypoint.shouldRender()) {
                     mc.displayGuiScreen(new GuiScreenWaypointsMenu());
                     return;
                 }
             }
-
             mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "No waypoints found for this server/world!"));
         }
     }

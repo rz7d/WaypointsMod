@@ -10,24 +10,8 @@ import java.io.*;
 
 public final class Waypoint {
 
-    // public static Waypoint of(Location location, String name, Color color, String address) {
-    //     // lastIndexOf: for IPv6 support
-    //     int sep = address.lastIndexOf(':');
-    //
-    //     InetSocketAddress server;
-    //     if (sep + 1 > address.length()) {
-    //         server = new InetSocketAddress(address, 25565);
-    //     } else {
-    //         server = new InetSocketAddress(
-    //             sep == -1 ? address : address.substring(0, sep),
-    //             sep == -1 ? 25565 : Integer.parseInt(address.substring(sep + 1)));
-    //     }
-    //
-    //     return new Waypoint(location, name, color, server);
-    // }
-
-    public static Waypoint of(Location location, String name, Color color, String server) {
-        return new Waypoint(location, name, color, server);
+    public static Waypoint of(Location location, String name, Color color, String address) {
+        return new Waypoint(location, name, color, address);
     }
 
     private final Location location;
@@ -35,13 +19,13 @@ public final class Waypoint {
     private final String name;
     private final Color color;
 
-    private final String server;
+    private final String address;
 
-    private Waypoint(Location location, String name, Color color, String server) {
+    private Waypoint(Location location, String name, Color color, String address) {
         this.location = location;
         this.name = name;
         this.color = color;
-        this.server = server;
+        this.address = address;
     }
 
     public Location location() {
@@ -56,8 +40,8 @@ public final class Waypoint {
         return color;
     }
 
-    public String server() {
-        return server;
+    public String address() {
+        return address;
     }
 
     @SideOnly(Side.CLIENT)
@@ -65,7 +49,7 @@ public final class Waypoint {
         final Minecraft mc = Minecraft.getMinecraft();
         return !mc.isSingleplayer()
             && mc.theWorld.provider.getDimensionName().equals(location.world())
-            && mc.getCurrentServerData().serverIP.equals(server);
+            && mc.getCurrentServerData().serverIP.equals(address);
     }
 
     @SideOnly(Side.CLIENT)
@@ -86,7 +70,7 @@ public final class Waypoint {
             out.writeUTF(location.world());
             out.writeUTF(name);
             out.writeInt(color.getRGB());
-            out.writeObject(server);
+            out.writeObject(address);
         }
         return buffer.toByteArray();
     }

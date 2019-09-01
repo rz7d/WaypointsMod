@@ -15,7 +15,7 @@ import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;
 import org.lwjgl.input.Keyboard;
 import pw.cinque.waypoints.command.HereCommand;
-import pw.cinque.waypoints.command.LocCommand;
+import pw.cinque.waypoints.command.ImAtCommand;
 import pw.cinque.waypoints.command.WaypointCommand;
 import pw.cinque.waypoints.entity.Waypoint;
 import pw.cinque.waypoints.listener.KeybindListener;
@@ -38,7 +38,7 @@ public class WaypointsMod {
     public static final String VERSION = "1.0-Beta";
 
     private static final Path WAYPOINTS_FILE;
-    public static boolean enable = true;
+    public static boolean enabled = true;
     private static Minecraft mc = Minecraft.getMinecraft();
 
     public static KeyBinding bindWaypointCreate = new KeyBinding("Create Waypoint", Keyboard.KEY_SEMICOLON, "Fyu's Waypoints");
@@ -81,7 +81,7 @@ public class WaypointsMod {
         FMLCommonHandler.instance().bus().register(new KeybindListener());
         MinecraftForge.EVENT_BUS.register(new WorldListener());
         ClientCommandHandler.instance.registerCommand(new HereCommand());
-        ClientCommandHandler.instance.registerCommand(new LocCommand());
+        ClientCommandHandler.instance.registerCommand(new ImAtCommand());
         ClientCommandHandler.instance.registerCommand(new WaypointCommand());
     }
 

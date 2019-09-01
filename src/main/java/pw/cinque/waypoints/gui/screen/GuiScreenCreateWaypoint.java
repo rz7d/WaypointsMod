@@ -76,7 +76,7 @@ public class GuiScreenCreateWaypoint extends GuiScreen {
 
         for (Waypoint waypoint : WaypointsMod.getWaypoints()) {
             if (waypoint.name().equalsIgnoreCase(name.getText())
-                && waypoint.server().equalsIgnoreCase(mc.getCurrentServerData().serverIP)) {
+                && waypoint.address().equalsIgnoreCase(mc.getCurrentServerData().serverIP)) {
                 this.create.enabled = false;
                 return;
             }
