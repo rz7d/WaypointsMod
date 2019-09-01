@@ -48,7 +48,8 @@ public class GuiSlotWaypoints extends GuiSlot {
 //            mc.displayGuiScreen(new GuiScreenDeleteConfirm(parent, waypoint));
             Location location = waypoint.location();
             mc.thePlayer.sendChatMessage(String.format(
-                "%s, %s, %s in %s",
+                "%s (%s, %s, %s) in %s",
+                waypoint.name(),
                 location.x(),
                 location.y(),
                 location.z(),
