@@ -1,26 +1,5 @@
 package pw.cinque.waypoints;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraftforge.common.MinecraftForge;
-
-import org.lwjgl.input.Keyboard;
-
-import pw.cinque.waypoints.listener.KeybindListener;
-import pw.cinque.waypoints.listener.WorldListener;
-import pw.cinque.waypoints.render.EntityWaypoints;
-import pw.cinque.waypoints.render.WaypointRenderer;
-import scala.actors.threadpool.Arrays;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -30,106 +9,110 @@ import cpw.mods.fml.common.ModMetadata;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.EntityRegistry;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.settings.KeyBinding;
+import net.minecraftforge.common.MinecraftForge;
+import org.lwjgl.input.Keyboard;
+import pw.cinque.waypoints.entity.Waypoint;
+import pw.cinque.waypoints.listener.KeybindListener;
+import pw.cinque.waypoints.listener.WorldListener;
+import pw.cinque.waypoints.render.EntityWaypoints;
+import pw.cinque.waypoints.render.WaypointRenderer;
+import pw.cinque.waypoints.storage.WaypointsStorage;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Set;
 
 @Mod(name = WaypointsMod.NAME, modid = WaypointsMod.MOD_ID, version = WaypointsMod.VERSION)
 public class WaypointsMod {
 
-	public static final String NAME = "Fyu's Waypoints";
-	public static final String MOD_ID = "waypoints";
-	public static final String VERSION = "1.0-Beta";
-	
-	private static final File WAYPOINTS_FILE;
-	private static Minecraft mc = Minecraft.getMinecraft();
+    public static final String NAME = "Fyu's Waypoints";
+    public static final String MOD_ID = "waypoints";
+    public static final String VERSION = "1.0-Beta";
 
-	public static KeyBinding bindWaypointCreate = new KeyBinding("Create Waypoint", Keyboard.KEY_SEMICOLON, "Fyu's Waypoints");
-	public static KeyBinding bindWaypointMenu = new KeyBinding("Open Menu", Keyboard.KEY_GRAVE, "Fyu's Waypoints");
+    private static final Path WAYPOINTS_FILE;
+    public static boolean enable = true;
+    private static Minecraft mc = Minecraft.getMinecraft();
 
-	private static Set<Waypoint> waypoints = new HashSet<Waypoint>();
-	private static ArrayList<Waypoint> waypointsToRender = new ArrayList<Waypoint>();
+    public static KeyBinding bindWaypointCreate = new KeyBinding("Create Waypoint", Keyboard.KEY_SEMICOLON, "Fyu's Waypoints");
+    public static KeyBinding bindWaypointMenu = new KeyBinding("Open Menu", Keyboard.KEY_GRAVE, "Fyu's Waypoints");
 
-	static {
-		File root = new File(Minecraft.getMinecraft().mcDataDir + File.separator + "Fyu's Waypoints");
-		root.mkdir();
+    private static ArrayList<Waypoint> waypointsToRender = new ArrayList<>();
 
-		WAYPOINTS_FILE = new File(root, "waypoints");
-	}
+    static {
+        final Path dir = mc.mcDataDir.toPath().resolve("waypoints");
+        try {
+            Files.createDirectories(dir);
+        } catch (IOException ignored) {
+        }
 
-	@EventHandler
-	public void preInit(FMLPreInitializationEvent event) {
-		ModMetadata metadata = event.getModMetadata();
-		metadata.version = VERSION;
-	}
-	
-	@EventHandler
-	public void init(FMLInitializationEvent event) {
-		if (WAYPOINTS_FILE.exists()) {
-			try {
-				BufferedReader reader = new BufferedReader(new FileReader(WAYPOINTS_FILE));
-				String readLine;
+        WAYPOINTS_FILE = dir.resolve("waypoints.json");
+    }
 
-				while ((readLine = reader.readLine()) != null) {
-					waypoints.add(Waypoint.fromString(readLine));
-				}
+    private static final WaypointsStorage storage = new WaypointsStorage(WAYPOINTS_FILE);
 
-				reader.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
+    @EventHandler
+    public void preInit(FMLPreInitializationEvent event) {
+        ModMetadata metadata = event.getModMetadata();
+        metadata.version = VERSION;
+    }
 
-		ClientRegistry.registerKeyBinding(bindWaypointCreate);
-		ClientRegistry.registerKeyBinding(bindWaypointMenu);
+    @EventHandler
+    public void init(FMLInitializationEvent event) {
+        try {
+            storage.load();
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        }
 
-		EntityRegistry.registerModEntity(EntityWaypoints.class, "Waypoint", 999, this, 1, 1, false);
-		RenderingRegistry.registerEntityRenderingHandler(EntityWaypoints.class, new WaypointRenderer());
+        ClientRegistry.registerKeyBinding(bindWaypointCreate);
+        ClientRegistry.registerKeyBinding(bindWaypointMenu);
 
-		FMLCommonHandler.instance().bus().register(new KeybindListener());
-		MinecraftForge.EVENT_BUS.register(new WorldListener());
-	}
+        EntityRegistry.registerModEntity(EntityWaypoints.class, "Waypoint", 999, this, 1, 1, false);
+        RenderingRegistry.registerEntityRenderingHandler(EntityWaypoints.class, new WaypointRenderer());
 
-	public static void addWaypoint(Waypoint waypoint) {
-		waypoints.add(waypoint);
-		refreshWaypointsToRender();
-		writeWaypointsToDisk();
-	}
+        FMLCommonHandler.instance().bus().register(new KeybindListener());
+        MinecraftForge.EVENT_BUS.register(new WorldListener());
+    }
 
-	public static void removeWaypoint(Waypoint waypoint) {
-		waypoints.remove(waypoint);
-		refreshWaypointsToRender();
-		writeWaypointsToDisk();
-	}
+    public static void addWaypoint(Waypoint waypoint) {
+        storage.waypoints().add(waypoint);
+        refreshWaypointsToRender();
+        try {
+            storage.save();
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        }
+    }
 
-	private static void writeWaypointsToDisk() {
-		try {
-			BufferedWriter writer = new BufferedWriter(new FileWriter(WAYPOINTS_FILE));
+    public static void removeWaypoint(Waypoint waypoint) {
+        storage.waypoints().remove(waypoint);
+        refreshWaypointsToRender();
+        try {
+            storage.save();
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        }
+    }
 
-			for (Waypoint w : waypoints) {
-				writer.write(w.toString());
-				writer.newLine();
-			}
+    public static Set<Waypoint> getWaypoints() {
+        return storage.waypoints();
+    }
 
-			writer.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+    public static void refreshWaypointsToRender() {
+        waypointsToRender.clear();
+        for (Waypoint waypoint : WaypointsMod.getWaypoints()) {
+            if (waypoint.shouldRender()) {
+                waypointsToRender.add(waypoint);
+            }
+        }
+    }
 
-	public static Set<Waypoint> getWaypoints() {
-		return waypoints;
-	}
-
-	public static void refreshWaypointsToRender() {
-		waypointsToRender.clear();
-
-		for (Waypoint waypoint : WaypointsMod.getWaypoints()) {
-			if (waypoint.shouldRender()) {
-				waypointsToRender.add(waypoint);
-			}
-		}
-	}
-
-	public static ArrayList<Waypoint> getWaypointsToRender() {
-		return waypointsToRender;
-	}
+    public static ArrayList<Waypoint> getWaypointsToRender() {
+        return waypointsToRender;
+    }
 
 }
