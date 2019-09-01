@@ -6,7 +6,6 @@ import net.minecraft.client.renderer.Tessellator;
 import pw.cinque.waypoints.WaypointsMod;
 import pw.cinque.waypoints.entity.Location;
 import pw.cinque.waypoints.entity.Waypoint;
-import pw.cinque.waypoints.gui.screen.GuiScreenDeleteConfirm;
 import pw.cinque.waypoints.gui.screen.GuiScreenWaypointsMenu;
 
 public class GuiSlotWaypoints extends GuiSlot {
@@ -46,7 +45,16 @@ public class GuiSlotWaypoints extends GuiSlot {
 
         if (doubleClicked) {
             Waypoint waypoint = WaypointsMod.getWaypointsToRender().get(selectedIndex);
-            mc.displayGuiScreen(new GuiScreenDeleteConfirm(parent, waypoint));
+//            mc.displayGuiScreen(new GuiScreenDeleteConfirm(parent, waypoint));
+            Location location = waypoint.location();
+            mc.thePlayer.sendChatMessage(String.format(
+                "%s, %s, %s in %s",
+                location.x(),
+                location.y(),
+                location.z(),
+                location.world())
+            );
+            mc.displayGuiScreen(null);
         }
     }
 
