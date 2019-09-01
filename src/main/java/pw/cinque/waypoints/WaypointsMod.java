@@ -35,7 +35,7 @@ public class WaypointsMod {
 
     public static final String NAME = "Fyu's Waypoints";
     public static final String MOD_ID = "waypoints";
-    public static final String VERSION = "1.0-Beta";
+    public static final String VERSION = "2.0.0";
 
     private static final Path WAYPOINTS_FILE;
     public static boolean enabled = true;
