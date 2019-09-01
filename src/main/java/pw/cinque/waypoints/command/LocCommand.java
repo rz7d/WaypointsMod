@@ -6,7 +6,6 @@ import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 public class LocCommand extends CommandBase {
@@ -50,8 +49,12 @@ public class LocCommand extends CommandBase {
         return true;
     }
 
+//    private static String str(double n) {
+//        return BigDecimal.valueOf(n).toPlainString();
+//    }
+
     private static String str(double n) {
-        return BigDecimal.valueOf(n).toPlainString();
+        return String.format("%.2f", n);
     }
 
 }
