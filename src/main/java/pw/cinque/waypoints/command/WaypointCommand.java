@@ -1,6 +1,6 @@
 package pw.cinque.waypoints.command;
 
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableList;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentText;
@@ -8,10 +8,9 @@ import pw.cinque.waypoints.WaypointsMod;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
-import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static net.minecraft.util.EnumChatFormatting.GREEN;
 import static net.minecraft.util.EnumChatFormatting.RED;
@@ -20,11 +19,11 @@ public class WaypointCommand extends AbstractCommand {
 
     private static final String NAME = "waypoint";
 
-    private static final Set<String> POSITIVE_SIGNS;
-    private static final Set<String> NEGATIVE_SIGNS;
+    private static final Collection<String> POSITIVE_SIGNS;
+    private static final Collection<String> NEGATIVE_SIGNS;
 
     static {
-        POSITIVE_SIGNS = ImmutableSet.of(
+        POSITIVE_SIGNS = ImmutableList.of(
             "1",
             "on",
             "y",
@@ -38,7 +37,7 @@ public class WaypointCommand extends AbstractCommand {
             "activate",
             "allow"
         );
-        NEGATIVE_SIGNS = ImmutableSet.of(
+        NEGATIVE_SIGNS = ImmutableList.of(
             "0",
             "off",
             "n",
@@ -63,6 +62,11 @@ public class WaypointCommand extends AbstractCommand {
     @Override
     public String getCommandUsage(ICommandSender sender) {
         return "/" + NAME + " <enable|disable>";
+    }
+
+    @Override
+    public List getCommandAliases() {
+        return ImmutableList.of("waypoints");
     }
 
     @Override
@@ -107,10 +111,18 @@ public class WaypointCommand extends AbstractCommand {
     }
 
     private static <T> Collection<T> pickup(Collection<T> from, int count) {
-        return new Random().ints(count, 0, from.size())
+        return new Random().ints(0, from.size())
+            .distinct()
+            .limit(count)
             .mapToObj(n -> {
+                if (from instanceof List) {
+                    return ((List<T>) from).get(n);
+                }
                 Iterator<T> iterator = from.iterator();
-                return IntStream.range(0, n).mapToObj(x -> iterator.next()).skip(n - 1).findAny().orElse(null);
+                for (int i = 0; i < n - 1; ++i) {
+                    iterator.next();
+                }
+                return iterator.next();
             })
             .collect(Collectors.toList());
     }
