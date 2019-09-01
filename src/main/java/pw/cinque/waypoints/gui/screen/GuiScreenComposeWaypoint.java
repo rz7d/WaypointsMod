@@ -12,9 +12,10 @@ import pw.cinque.waypoints.entity.Location;
 import pw.cinque.waypoints.entity.Waypoint;
 import pw.cinque.waypoints.gui.GuiColorPicker;
 
+import javax.annotation.Nullable;
 import java.awt.*;
 
-public class GuiScreenCreateWaypoint extends GuiScreen {
+public class GuiScreenComposeWaypoint extends GuiScreen {
 
     private GuiTextField name;
     private GuiTextField coordsX;
@@ -23,6 +24,19 @@ public class GuiScreenCreateWaypoint extends GuiScreen {
     private GuiColorPicker colorPicker;
     private GuiButton create;
     private GuiButton cancel;
+
+    /**
+     * only available in edit mode
+     **/
+    private final Waypoint target;
+
+    public GuiScreenComposeWaypoint() {
+        this(null);
+    }
+
+    public GuiScreenComposeWaypoint(@Nullable Waypoint target) {
+        this.target = target;
+    }
 
     @Override
     public void initGui() {
@@ -37,9 +51,18 @@ public class GuiScreenCreateWaypoint extends GuiScreen {
         this.buttonList.add(create = new GuiButton(1, this.width / 2 - 101, this.height / 2 + 50, 100, 20, "Create"));
         this.buttonList.add(cancel = new GuiButton(2, this.width / 2 + 1, this.height / 2 + 50, 100, 20, "Cancel"));
 
-        this.coordsX.setText(String.valueOf((int) mc.thePlayer.posX));
-        this.coordsY.setText(String.valueOf((int) mc.thePlayer.posY));
-        this.coordsZ.setText(String.valueOf((int) mc.thePlayer.posZ));
+        if (target == null) {
+            this.coordsX.setText(String.valueOf((int) mc.thePlayer.posX));
+            this.coordsY.setText(String.valueOf((int) mc.thePlayer.posY));
+            this.coordsZ.setText(String.valueOf((int) mc.thePlayer.posZ));
+        } else {
+            Location location = target.location();
+            name.setText(target.name());
+            coordsX.setText(String.valueOf(location.x()));
+            coordsY.setText(String.valueOf(location.y()));
+            coordsZ.setText(String.valueOf(location.z()));
+            colorPicker.setColor(target.color().getRGB());
+        }
         this.create.enabled = false;
     }
 
@@ -47,7 +70,7 @@ public class GuiScreenCreateWaypoint extends GuiScreen {
     public void drawScreen(int x, int y, float partialTicks) {
         this.drawDefaultBackground();
 
-        this.drawCenteredString(this.fontRendererObj, "Create Waypoint", this.width / 2, 10, 0xFFFFFF);
+        this.drawCenteredString(this.fontRendererObj, target == null ? "Create Waypoint" : "Edit Waypoint", this.width / 2, 10, 0xFFFFFF);
         this.drawCenteredString(this.fontRendererObj, "Name:", this.width / 2, this.height / 2 - 60, 0xFFFFFF);
         this.drawCenteredString(this.fontRendererObj, "Coordinates (X/Y/Z):", this.width / 2, this.height / 2 - 22, 0xFFFFFF);
         this.drawCenteredString(this.fontRendererObj, "Color:", this.width / 2, this.height / 2 + 14, 0xFFFFFF);
@@ -82,7 +105,14 @@ public class GuiScreenCreateWaypoint extends GuiScreen {
             }
         }
 
-        this.create.enabled = name.getText().length() > 0 && NumberUtils.isDigits(coordsX.getText().replace("-", "")) && NumberUtils.isDigits(coordsY.getText().replace("-", "")) && NumberUtils.isDigits(coordsZ.getText().replace("-", ""));
+        testInputs();
+    }
+
+    private void testInputs() {
+        this.create.enabled = name.getText().length() > 0
+            && NumberUtils.isDigits(coordsX.getText().replace("-", ""))
+            && NumberUtils.isDigits(coordsY.getText().replace("-", ""))
+            && NumberUtils.isDigits(coordsZ.getText().replace("-", ""));
     }
 
     @Override
@@ -98,20 +128,30 @@ public class GuiScreenCreateWaypoint extends GuiScreen {
         switch (button.id) {
             case 0:
                 colorPicker.nextColor();
+                testInputs();
                 return;
 
             case 1:
                 String name = this.name.getText();
-                String world = mc.theWorld.provider.getDimensionName();
-                String server = mc.getCurrentServerData().serverIP;
+                String world = target == null
+                    ? mc.theWorld.provider.getDimensionName()
+                    : target.location().world();
+                String server = target == null
+                    ? mc.getCurrentServerData().serverIP
+                    : target.address();
                 int x = Integer.parseInt(coordsX.getText());
                 int y = Integer.parseInt(coordsY.getText());
                 int z = Integer.parseInt(coordsZ.getText());
-                int color = colorPicker.getSelectedColor();
+                int color = colorPicker.getColor();
 
                 WaypointsMod.addWaypoint(Waypoint.of(Location.of(x, y, z, world), name, new Color(color), server));
+                // replace waypoints
+                if (target != null)
+                    WaypointsMod.removeWaypoint(target);
+
                 mc.displayGuiScreen(null);
-                mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Waypoint '" + name + "' created!"));
+                mc.thePlayer.addChatMessage(new ChatComponentText(
+                    EnumChatFormatting.GREEN + "Waypoint '" + name + (target == null ? "' created!" : "' edited!")));
                 return;
 
             case 2:

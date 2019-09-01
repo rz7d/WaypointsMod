@@ -9,16 +9,23 @@ import pw.cinque.waypoints.gui.GuiSlotWaypoints;
 
 public class GuiScreenWaypointsMenu extends GuiScreen {
 
+    private static final int ID_DELETE = 0;
+    private static final int ID_EDIT = 1;
+    private static final int ID_CANCEL = -1;
+
     private GuiSlotWaypoints waypointsList;
     private GuiButton delete;
     private GuiButton cancel;
+    private GuiButton edit;
 
     @Override
     public void initGui() {
-        this.buttonList.add(delete = new GuiButton(0, this.width / 2 - 101, this.height - 24, 100, 20, "Delete"));
-        this.buttonList.add(cancel = new GuiButton(1, this.width / 2 + 1, this.height - 24, 100, 20, "Cancel"));
+        this.buttonList.add(delete = new GuiButton(ID_DELETE, this.width / 2 - 101, this.height - 24, 100, 20, "Delete"));
+        this.buttonList.add(edit = new GuiButton(ID_EDIT, this.width / 2 - 203, this.height - 24, 100, 20, "Edit"));
+        this.buttonList.add(cancel = new GuiButton(ID_CANCEL, this.width / 2 + 103, this.height - 24, 100, 20, "Cancel"));
 
         this.delete.enabled = false;
+        this.edit.enabled = false;
         this.waypointsList = new GuiSlotWaypoints(this);
     }
 
@@ -35,19 +42,26 @@ public class GuiScreenWaypointsMenu extends GuiScreen {
     @Override
     public void updateScreen() {
         delete.enabled = waypointsList.getSelectedIndex() != -1;
+        edit.enabled = waypointsList.getSelectedIndex() != -1;
     }
 
     @Override
     protected void actionPerformed(GuiButton button) {
+        Waypoint waypoint;
         switch (button.id) {
-            case 0:
-                Waypoint waypoint = WaypointsMod.getWaypointsToRender().get(waypointsList.getSelectedIndex());
+            case ID_DELETE:
+                waypoint = WaypointsMod.getWaypointsToRender().get(waypointsList.getSelectedIndex());
                 mc.displayGuiScreen(new GuiScreenDeleteConfirm(this, waypoint));
-                return;
+                break;
 
-            case 1:
+            case ID_EDIT:
+                waypoint = WaypointsMod.getWaypointsToRender().get(waypointsList.getSelectedIndex());
+                mc.displayGuiScreen(new GuiScreenComposeWaypoint(waypoint));
+                break;
+
+            case ID_CANCEL:
                 mc.displayGuiScreen(null);
-                return;
+                break;
         }
     }
 

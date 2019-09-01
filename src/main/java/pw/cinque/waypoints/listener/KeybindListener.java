@@ -7,7 +7,7 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import pw.cinque.waypoints.WaypointsMod;
 import pw.cinque.waypoints.entity.Waypoint;
-import pw.cinque.waypoints.gui.screen.GuiScreenCreateWaypoint;
+import pw.cinque.waypoints.gui.screen.GuiScreenComposeWaypoint;
 import pw.cinque.waypoints.gui.screen.GuiScreenWaypointsMenu;
 
 public class KeybindListener {
@@ -20,7 +20,7 @@ public class KeybindListener {
             if (mc.isSingleplayer()) {
                 mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "You can only create waypoints in multiplayer!"));
             } else {
-                mc.displayGuiScreen(new GuiScreenCreateWaypoint());
+                mc.displayGuiScreen(new GuiScreenComposeWaypoint());
             }
         }
         if (WaypointsMod.bindWaypointMenu.isPressed()) {
