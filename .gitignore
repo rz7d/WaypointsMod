@@ -4,6 +4,8 @@
 /build/
 /eclipse/
 /gradle/
+/run/
+.idea/
 .classpath
 gradlew
 gradlew.bat
